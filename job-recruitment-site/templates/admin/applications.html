@@ -1,0 +1,55 @@
+{% extends "admin/base.html" %}
+{% block title %}Applications{% endblock %}
+{% block heading %}Applications{% endblock %}
+
+{% block content %}
+<form class="toolbar" method="get">
+  <input type="search" name="q" value="{{ q }}" placeholder="Search name, email or phone">
+  <select name="status">
+    <option value="">All statuses</option>
+    {% for s in app_statuses %}<option value="{{ s }}" {{ 'selected' if s == sel_status }}>{{ s|capitalize }}</option>{% endfor %}
+  </select>
+  <select name="job">
+    <option value="">All jobs</option>
+    {% for j in job_list %}<option value="{{ j.id }}" {{ 'selected' if j.id|string == sel_job }}>{{ j.title }}</option>{% endfor %}
+  </select>
+  <button class="btn btn-primary" type="submit">Filter</button>
+  <a class="btn btn-ghost" href="{{ url_for('admin_applications') }}">Clear</a>
+</form>
+
+<div class="panel flush">
+  {% if apps %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Applicant</th><th>Applied for</th><th>Contact</th><th>Date</th><th>Status</th><th class="right">Actions</th></tr></thead>
+      <tbody>
+      {% for a in apps %}
+        <tr>
+          <td data-l="Applicant"><strong><a href="{{ url_for('admin_application', app_id=a.id) }}">{{ a.name }}</a></strong></td>
+          <td data-l="Applied for">{{ a.job_title or 'General CV submission' }}</td>
+          <td data-l="Contact"><a href="mailto:{{ a.email }}">{{ a.email }}</a><small><a href="tel:{{ a.phone|replace(' ', '') }}">{{ a.phone }}</a></small></td>
+          <td data-l="Date">{{ a.created_at|nicedate }}<small>{{ a.created_at|ago }}</small></td>
+          <td data-l="Status">
+            <form method="post" action="{{ url_for('admin_application_status', app_id=a.id) }}" class="inline">
+              <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+              <input type="hidden" name="back" value="{{ request.full_path|trim('?') }}">
+              <select name="status" class="status-select s-{{ a.status }}" onchange="this.form.submit()">
+                {% for s in app_statuses %}<option value="{{ s }}" {{ 'selected' if s == a.status }}>{{ s|capitalize }}</option>{% endfor %}
+              </select>
+            </form>
+          </td>
+          <td class="right actions">
+            <a class="btn btn-sm btn-primary" href="{{ url_for('admin_cv', app_id=a.id) }}">Download CV</a>
+            <form method="post" action="{{ url_for('admin_application_delete', app_id=a.id) }}" data-confirm="Delete this application and the CV file?">
+              <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+              <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}<p class="empty">No applications found.</p>{% endif %}
+</div>
+{% endblock %}

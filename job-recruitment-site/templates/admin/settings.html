@@ -1,0 +1,39 @@
+{% extends "admin/base.html" %}
+{% block title %}Settings{% endblock %}
+{% block heading %}Settings{% endblock %}
+
+{% block content %}
+<form method="post" enctype="multipart/form-data" class="panel form-grid">
+  <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+  <input type="hidden" name="form_type" value="site">
+  <div class="span2"><h2>Website &amp; contact details</h2><p class="muted">Change these to your own company details. They update everywhere on the website.</p></div>
+  <label>Site / company name<input name="site_name" required maxlength="60" value="{{ site.site_name }}"></label>
+  <label>Tagline<input name="tagline" maxlength="120" value="{{ site.tagline }}"></label>
+  <label>Email<input name="email" type="email" value="{{ site.email }}"></label>
+  <label>Phone<input name="phone" value="{{ site.phone }}"></label>
+  <label>WhatsApp number<input name="whatsapp" value="{{ site.whatsapp }}" placeholder="+1..."></label>
+  <label>Opening hours<input name="hours" value="{{ site.hours }}"></label>
+  <label class="span2">Office address<input name="address" value="{{ site.address }}"></label>
+  <label>Facebook link<input name="facebook" value="{{ site.facebook }}" placeholder="https://facebook.com/..."></label>
+  <label>Instagram link<input name="instagram" value="{{ site.instagram }}" placeholder="https://instagram.com/..."></label>
+  <label>LinkedIn link<input name="linkedin" value="{{ site.linkedin }}" placeholder="https://linkedin.com/..."></label>
+  <div class="logo-box">
+    <span>Logo</span>
+    {% if site.logo %}<img src="{{ url_for('static', filename='uploads/' ~ site.logo) }}" alt="Current logo">{% else %}<em>No logo uploaded (the first letter is used).</em>{% endif %}
+    <input type="file" name="logo" accept=".png,.jpg,.jpeg,.webp,.svg">
+    {% if site.logo %}<label class="check"><input type="checkbox" name="remove_logo"> Remove current logo</label>{% endif %}
+  </div>
+  <div class="span2"><button class="btn btn-primary" type="submit">Save settings</button></div>
+</form>
+
+<form method="post" class="panel form-grid">
+  <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+  <input type="hidden" name="form_type" value="password">
+  <div class="span2"><h2>Change admin password</h2></div>
+  <label>Current password<input name="current" type="password" required autocomplete="current-password"></label>
+  <span></span>
+  <label>New password (8+ characters)<input name="new" type="password" required minlength="8" autocomplete="new-password"></label>
+  <label>Confirm new password<input name="confirm" type="password" required minlength="8" autocomplete="new-password"></label>
+  <div class="span2"><button class="btn btn-primary" type="submit">Update password</button></div>
+</form>
+{% endblock %}

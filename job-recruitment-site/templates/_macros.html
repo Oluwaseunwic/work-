@@ -1,0 +1,30 @@
+{% macro job_card(job, delay=0) %}
+<article class="job-card reveal" style="--d: {{ delay }}ms">
+  {% if job.featured %}<span class="ribbon">Featured</span>{% endif %}
+  <div class="job-card-top">
+    <span class="avatar" aria-hidden="true">{{ job.company[:1]|upper }}</span>
+    <div>
+      <h3><a href="{{ url_for('job_detail', job_id=job.id) }}">{{ job.title }}</a></h3>
+      <p class="company">{{ job.company }}</p>
+    </div>
+  </div>
+  <ul class="chips">
+    <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>{{ job.location }}</li>
+    <li class="chip-type">{{ job.job_type }}</li>
+    <li>{{ job.category }}</li>
+  </ul>
+  <div class="job-card-foot">
+    <span class="salary">{{ job.salary or 'Salary negotiable' }}</span>
+    <span class="posted">{{ job.created_at|ago }}</span>
+  </div>
+  <a href="{{ url_for('job_detail', job_id=job.id) }}" class="card-link" aria-label="View {{ job.title }}"></a>
+</article>
+{% endmacro %}
+
+{% macro flash_field(label, name, type='text', required=True, placeholder='', value='', autocomplete='') %}
+<div class="field">
+  <label for="{{ name }}">{{ label }}{% if required %} <em>*</em>{% endif %}</label>
+  <input id="{{ name }}" name="{{ name }}" type="{{ type }}" {% if required %}required{% endif %}
+         placeholder="{{ placeholder }}" value="{{ value }}" {% if autocomplete %}autocomplete="{{ autocomplete }}"{% endif %}>
+</div>
+{% endmacro %}

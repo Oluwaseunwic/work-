@@ -1,0 +1,36 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ 'Post a job' if mode == 'new' else 'Edit job' }}{% endblock %}
+{% block heading %}{{ 'Post a job' if mode == 'new' else 'Edit job' }}{% endblock %}
+{% block actions %}<a class="btn btn-ghost" href="{{ url_for('admin_jobs') }}">&larr; Back to jobs</a>{% endblock %}
+
+{% block content %}
+<form method="post" class="panel form-grid">
+  <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+  <label class="span2">Job title *<input name="title" required maxlength="140" value="{{ job.title or '' }}" placeholder="e.g. Frontend Developer"></label>
+  <label>Company *<input name="company" required maxlength="140" value="{{ job.company or '' }}"></label>
+  <label>Location *<input name="location" required maxlength="100" value="{{ job.location or '' }}" placeholder="e.g. New York, NY, or Remote"></label>
+  <label>Category *
+    <select name="category" required>
+      {% for c in categories %}<option value="{{ c }}" {{ 'selected' if job.category == c }}>{{ c }}</option>{% endfor %}
+    </select>
+  </label>
+  <label>Job type *
+    <select name="job_type" required>
+      {% for t in job_types %}<option value="{{ t }}" {{ 'selected' if job.job_type == t }}>{{ t }}</option>{% endfor %}
+    </select>
+  </label>
+  <label>Salary<input name="salary" maxlength="100" value="{{ job.salary or '' }}" placeholder="e.g. $500 - $800 / month"></label>
+  <label>Application deadline<input name="deadline" type="date" value="{{ job.deadline or '' }}"></label>
+  <label class="span2">Description *
+    <textarea name="description" rows="9" required placeholder="Describe the role. Start a line with a dash (-) to make a bullet list.">{{ job.description or '' }}</textarea>
+  </label>
+  <label class="span2">Requirements
+    <textarea name="requirements" rows="6" placeholder="One requirement per line">{{ job.requirements or '' }}</textarea>
+  </label>
+  <div class="span2 checks">
+    <label class="check"><input type="checkbox" name="featured" {{ 'checked' if job.featured }}> Feature this job on the homepage</label>
+    <label class="check"><input type="checkbox" name="status" value="closed" {{ 'checked' if job.status == 'closed' }}> Mark as closed (hidden from the public)</label>
+  </div>
+  <div class="span2"><button class="btn btn-primary" type="submit">{{ 'Publish job' if mode == 'new' else 'Save changes' }}</button></div>
+</form>
+{% endblock %}

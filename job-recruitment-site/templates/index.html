@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% from "_macros.html" import job_card %}
+{% block title %}Find Your Next Job{% endblock %}
+
+{% block content %}
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-shapes" aria-hidden="true">
+    <span class="shape s1"></span><span class="shape s2"></span><span class="shape s3"></span><span class="grid-dots"></span>
+  </div>
+  <div class="wrap hero-inner">
+    <div class="hero-copy">
+      <p class="eyebrow reveal"><span class="pulse"></span> {{ stats.jobs }} vacancies open right now</p>
+      <h1 class="reveal" style="--d:80ms">
+        Find work that <span class="swap-wrap"><span class="swap" id="swap">fits you</span></span><br>
+        and employers who value you.
+      </h1>
+      <p class="lead reveal" style="--d:160ms">{{ site.tagline }}. Browse verified vacancies across the United States, apply in minutes and let our team connect you with the right company.</p>
+
+      <form class="search-bar reveal" style="--d:240ms" action="{{ url_for('jobs') }}" method="get" role="search">
+        <label class="sb-field">
+          <span>What</span>
+          <input type="text" name="q" placeholder="Job title or company" aria-label="Job title or company">
+        </label>
+        <label class="sb-field">
+          <span>Where</span>
+          <input type="text" name="location" placeholder="City or state" aria-label="Location">
+        </label>
+        <button class="btn btn-gold" type="submit">Search jobs</button>
+      </form>
+
+      <p class="hero-hint reveal" style="--d:320ms">Popular:
+        <a href="{{ url_for('jobs', q='developer') }}">Developer</a>
+        <a href="{{ url_for('jobs', q='accountant') }}">Accountant</a>
+        <a href="{{ url_for('jobs', type='Remote') }}">Remote</a>
+        <a href="{{ url_for('jobs', location='New York') }}">New York, NY</a>
+      </p>
+    </div>
+
+    <div class="hero-visual reveal" style="--d:200ms" aria-hidden="true">
+      <div class="float-card fc1">
+        <span class="avatar">B</span>
+        <div><strong>Frontend Developer</strong><small>Bluepeak Digital · New York</small></div>
+      </div>
+      <div class="float-card fc2">
+        <span class="tick">&#10003;</span>
+        <div><strong>Application sent</strong><small>CV received successfully</small></div>
+      </div>
+      <div class="float-card fc3">
+        <div class="mini-stat"><b>{{ stats.jobs }}</b><small>open vacancies</small></div>
+      </div>
+      <div class="hero-orb"><span>{{ site.site_name[:1] }}</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS STRIP -->
+<section class="stats-strip">
+  <div class="wrap stats-grid">
+    <div class="stat reveal"><b data-count="{{ stats.jobs }}">0</b><span>Open jobs</span></div>
+    <div class="stat reveal" style="--d:80ms"><b data-count="{{ stats.companies }}">0</b><span>Hiring companies</span></div>
+    <div class="stat reveal" style="--d:160ms"><b data-count="{{ stats.applicants }}">0</b><span>Applications received</span></div>
+    <div class="stat reveal" style="--d:240ms"><b data-count="100" data-suffix="%">0</b><span>Free for job seekers</span></div>
+  </div>
+</section>
+
+<!-- CATEGORIES -->
+{% if cat_rows %}
+<section class="section">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <p class="kicker">Browse by field</p>
+      <h2>Explore jobs by category</h2>
+    </div>
+    <div class="cat-grid">
+      {% for c in cat_rows %}
+      <a class="cat reveal" style="--d: {{ loop.index0 * 60 }}ms" href="{{ url_for('jobs', category=c.category) }}">
+        <span class="cat-num">{{ '%02d'|format(loop.index) }}</span>
+        <strong>{{ c.category }}</strong>
+        <small>{{ c.n }} open {{ 'role' if c.n == 1 else 'roles' }}</small>
+        <span class="cat-arrow">&rarr;</span>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- LATEST JOBS -->
+<section class="section section-tint">
+  <div class="wrap">
+    <div class="section-head row reveal">
+      <div>
+        <p class="kicker">Fresh vacancies</p>
+        <h2>Latest &amp; featured jobs</h2>
+      </div>
+      <a href="{{ url_for('jobs') }}" class="link-arrow">View all jobs <span>&rarr;</span></a>
+    </div>
+    {% if featured %}
+    <div class="job-grid">
+      {% for job in featured %}{{ job_card(job, loop.index0 * 70) }}{% endfor %}
+    </div>
+    {% else %}
+    <p class="empty">No jobs are open right now. Please check back soon.</p>
+    {% endif %}
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-head center reveal">
+      <p class="kicker">Simple process</p>
+      <h2>Getting hired in three steps</h2>
+    </div>
+    <div class="steps">
+      <div class="step reveal">
+        <span class="step-no">1</span>
+        <h3>Find a role</h3>
+        <p>Search by title, city or category. Every vacancy is reviewed by our team before it goes live.</p>
+      </div>
+      <div class="step reveal" style="--d:120ms">
+        <span class="step-no">2</span>
+        <h3>Send your CV</h3>
+        <p>Upload your CV and a short note. It takes about two minutes and no account is needed.</p>
+      </div>
+      <div class="step reveal" style="--d:240ms">
+        <span class="step-no">3</span>
+        <h3>We connect you</h3>
+        <p>Shortlisted candidates are contacted directly by phone or email to confirm the next step.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EMPLOYER CTA -->
+<section class="section cta-wrap">
+  <div class="wrap">
+    <div class="cta reveal">
+      <div>
+        <h2>Hiring? Let us find your next team member.</h2>
+        <p>Tell us about your vacancy. We confirm the details with you directly, then publish it to people who are ready to work.</p>
+      </div>
+      <a href="{{ url_for('employers') }}#form" class="btn btn-gold btn-lg">Post a vacancy</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

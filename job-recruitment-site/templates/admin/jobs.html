@@ -1,0 +1,42 @@
+{% extends "admin/base.html" %}
+{% block title %}Jobs{% endblock %}
+{% block heading %}Jobs{% endblock %}
+{% block actions %}<a class="btn btn-primary" href="{{ url_for('admin_job_new') }}">+ Post a job</a>{% endblock %}
+
+{% block content %}
+<div class="panel flush">
+  {% if jobs %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Job</th><th>Location</th><th>Type</th><th>Applicants</th><th>Status</th><th class="right">Actions</th></tr></thead>
+      <tbody>
+      {% for j in jobs %}
+        <tr>
+          <td data-l="Job"><strong>{{ j.title }}</strong>{% if j.featured %} <span class="tag gold">Featured</span>{% endif %}<small>{{ j.company }} &middot; {{ j.category }}</small></td>
+          <td data-l="Location">{{ j.location }}</td>
+          <td data-l="Type">{{ j.job_type }}</td>
+          <td data-l="Applicants"><a href="{{ url_for('admin_applications', job=j.id) }}">{{ j.apps }}</a></td>
+          <td data-l="Status">
+            {% if is_expired(j) and j.status == 'open' %}<span class="tag red">Expired</span>
+            {% else %}<span class="tag {{ 'green' if j.status == 'open' else 'grey' }}">{{ j.status|capitalize }}</span>{% endif %}
+          </td>
+          <td class="right actions">
+            <a class="btn btn-sm btn-ghost" href="{{ url_for('job_detail', job_id=j.id) }}" target="_blank" rel="noopener">View</a>
+            <a class="btn btn-sm btn-ghost" href="{{ url_for('admin_job_edit', job_id=j.id) }}">Edit</a>
+            <form method="post" action="{{ url_for('admin_job_toggle', job_id=j.id) }}">
+              <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+              <button class="btn btn-sm btn-ghost" type="submit">{{ 'Close' if j.status == 'open' else 'Reopen' }}</button>
+            </form>
+            <form method="post" action="{{ url_for('admin_job_delete', job_id=j.id) }}" data-confirm="Delete this job? Applications already received will be kept.">
+              <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+              <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}<p class="empty">No jobs yet. Click "Post a job" to add your first one.</p>{% endif %}
+</div>
+{% endblock %}

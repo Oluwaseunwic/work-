@@ -1,0 +1,33 @@
+{% extends "admin/base.html" %}
+{% block title %}Employer requests{% endblock %}
+{% block heading %}Employer requests{% endblock %}
+
+{% block content %}
+{% if rows %}
+<div class="stack-cards">
+  {% for r in rows %}
+  <article class="panel request {{ 'done' if r.status == 'contacted' }}">
+    <div class="panel-head">
+      <div><h2>{{ r.company }}</h2><p class="muted">{{ r.contact_person }} &middot; {{ r.created_at|ago }}</p></div>
+      <span class="tag {{ 'green' if r.status == 'contacted' else 'gold' }}">{{ 'Contacted' if r.status == 'contacted' else 'New' }}</span>
+    </div>
+    <div class="note">{{ r.message }}</div>
+    <div class="btn-row">
+      <a class="btn btn-sm btn-primary" href="tel:{{ r.phone|replace(' ', '') }}">Call {{ r.phone }}</a>
+      <a class="btn btn-sm btn-ghost" href="mailto:{{ r.email }}">{{ r.email }}</a>
+      {% if r.status != 'contacted' %}
+      <form method="post" action="{{ url_for('admin_request_action', req_id=r.id, action='done') }}">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        <button class="btn btn-sm btn-ghost" type="submit">Mark as contacted</button>
+      </form>
+      {% endif %}
+      <form method="post" action="{{ url_for('admin_request_action', req_id=r.id, action='delete') }}" data-confirm="Delete this request?">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+      </form>
+    </div>
+  </article>
+  {% endfor %}
+</div>
+{% else %}<div class="panel"><p class="empty">No employer requests yet.</p></div>{% endif %}
+{% endblock %}

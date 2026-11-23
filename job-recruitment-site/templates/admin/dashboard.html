@@ -1,0 +1,43 @@
+{% extends "admin/base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block heading %}Dashboard{% endblock %}
+{% block actions %}<a class="btn btn-primary" href="{{ url_for('admin_job_new') }}">+ Post a job</a>{% endblock %}
+
+{% block content %}
+<div class="cards">
+  <a class="stat-card" href="{{ url_for('admin_jobs') }}"><b>{{ stats.open_jobs }}</b><span>Open jobs</span><small>{{ stats.total_jobs }} in total</small></a>
+  <a class="stat-card" href="{{ url_for('admin_applications') }}"><b>{{ stats.applications }}</b><span>Applications</span><small>{{ stats.new_apps }} new</small></a>
+  <a class="stat-card {{ 'hot' if stats.requests }}" href="{{ url_for('admin_requests') }}"><b>{{ stats.requests }}</b><span>Employer requests</span><small>waiting for a call</small></a>
+  <a class="stat-card {{ 'hot' if stats.messages }}" href="{{ url_for('admin_messages') }}"><b>{{ stats.messages }}</b><span>Unread messages</span><small>from the contact form</small></a>
+</div>
+
+<div class="two-col">
+  <section class="panel">
+    <div class="panel-head"><h2>Latest applications</h2><a href="{{ url_for('admin_applications') }}">View all</a></div>
+    {% if recent %}
+    <ul class="list">
+      {% for a in recent %}
+      <li>
+        <a href="{{ url_for('admin_application', app_id=a.id) }}">
+          <span class="dot dot-{{ a.status }}"></span>
+          <span class="grow"><strong>{{ a.name }}</strong><small>{{ a.job_title or 'General CV submission' }}</small></span>
+          <small>{{ a.created_at|ago }}</small>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}<p class="empty">No applications yet.</p>{% endif %}
+  </section>
+
+  <section class="panel">
+    <div class="panel-head"><h2>Most applied jobs</h2></div>
+    {% if top_jobs %}
+    <ul class="list">
+      {% for j in top_jobs %}
+      <li><a href="{{ url_for('admin_applications', job=j.id) }}"><span class="grow"><strong>{{ j.title }}</strong></span><span class="pill">{{ j.n }}</span></a></li>
+      {% endfor %}
+    </ul>
+    {% else %}<p class="empty">No jobs yet.</p>{% endif %}
+  </section>
+</div>
+{% endblock %}

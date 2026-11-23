@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}About Us{% endblock %}
+
+{% block content %}
+<section class="page-head">
+  <div class="wrap">
+    <p class="crumbs"><a href="{{ url_for('index') }}">Home</a> / About</p>
+    <h1 class="reveal">About {{ site.site_name }}</h1>
+    <p class="lead reveal" style="--d:80ms">{{ site.tagline }}.</p>
+  </div>
+</section>
+
+<section class="section tight">
+  <div class="wrap about-grid">
+    <div class="reveal">
+      <h2>Hiring should be simple and honest</h2>
+      <p>{{ site.site_name }} is a recruitment platform that brings job seekers and employers together. We review every vacancy before it is published and we speak to employers directly, so the jobs you see are real.</p>
+      <p>For job seekers, our service is free. Upload your CV once, apply to the roles that suit you, and our team will reach out when an employer wants to move forward.</p>
+      <p>For employers, we do the first round of screening so you meet people who match what you asked for.</p>
+      <div class="btn-row">
+        <a class="btn btn-primary" href="{{ url_for('jobs') }}">Browse jobs</a>
+        <a class="btn btn-ghost" href="{{ url_for('employers') }}#form">Post a vacancy</a>
+      </div>
+    </div>
+    <div class="values reveal" style="--d:120ms">
+      <div class="value"><b>Verified</b><span>Vacancies confirmed with employers</span></div>
+      <div class="value"><b>Free</b><span>No charges for job seekers</span></div>
+      <div class="value"><b>Private</b><span>Your CV is seen only by our team</span></div>
+      <div class="value"><b>Personal</b><span>Real people answer your calls</span></div>
+    </div>
+  </div>
+</section>
+{% endblock %}

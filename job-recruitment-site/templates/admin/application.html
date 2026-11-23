@@ -1,0 +1,37 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ a.name }}{% endblock %}
+{% block heading %}Application{% endblock %}
+{% block actions %}<a class="btn btn-ghost" href="{{ url_for('admin_applications') }}">&larr; All applications</a>{% endblock %}
+
+{% block content %}
+<div class="two-col wide-left">
+  <section class="panel">
+    <h2>{{ a.name }}</h2>
+    <p class="muted">Applied for <strong>{{ a.job_title or 'General CV submission' }}</strong> &middot; {{ a.created_at|nicedate }}</p>
+    <dl class="kv">
+      <div><dt>Email</dt><dd><a href="mailto:{{ a.email }}">{{ a.email }}</a></dd></div>
+      <div><dt>Phone</dt><dd><a href="tel:{{ a.phone|replace(' ', '') }}">{{ a.phone }}</a></dd></div>
+      <div><dt>CV file</dt><dd>{{ a.cv_original }}</dd></div>
+    </dl>
+    <h3>Note from applicant</h3>
+    <div class="note">{{ a.cover_letter or 'No note was added.' }}</div>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="{{ url_for('admin_cv', app_id=a.id) }}">Download CV</a>
+      <a class="btn btn-ghost" href="mailto:{{ a.email }}">Email applicant</a>
+      <a class="btn btn-ghost" href="tel:{{ a.phone|replace(' ', '') }}">Call</a>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h3>Status</h3>
+    <form method="post" action="{{ url_for('admin_application_status', app_id=a.id) }}" class="stack">
+      <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+      <input type="hidden" name="back" value="{{ url_for('admin_application', app_id=a.id) }}">
+      <select name="status">
+        {% for s in app_statuses %}<option value="{{ s }}" {{ 'selected' if s == a.status }}>{{ s|capitalize }}</option>{% endfor %}
+      </select>
+      <button class="btn btn-primary" type="submit">Update status</button>
+    </form>
+  </section>
+</div>
+{% endblock %}

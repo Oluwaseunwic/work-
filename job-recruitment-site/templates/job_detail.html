@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% from "_macros.html" import job_card %}
+{% block title %}{{ job.title }} at {{ job.company }}{% endblock %}
+{% block desc %}{{ job.title }} at {{ job.company }} in {{ job.location }}. Apply online.{% endblock %}
+
+{% block content %}
+{% set closed = is_expired(job) %}
+<section class="page-head detail-head">
+  <div class="wrap">
+    <p class="crumbs"><a href="{{ url_for('index') }}">Home</a> / <a href="{{ url_for('jobs') }}">Find Jobs</a> / {{ job.title }}</p>
+    <div class="detail-title reveal">
+      <span class="avatar lg" aria-hidden="true">{{ job.company[:1]|upper }}</span>
+      <div>
+        <h1>{{ job.title }}</h1>
+        <p class="company">{{ job.company }} &middot; {{ job.location }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section tight">
+  <div class="wrap detail-grid">
+    <article class="detail-main reveal">
+      {% if closed %}
+      <div class="notice notice-warn">This vacancy is no longer accepting applications.</div>
+      {% endif %}
+
+      <h2>About the role</h2>
+      {% for kind, content in job.description|blocks %}
+        {% if kind == 'list' %}
+          <ul class="ticks">{% for li in content %}<li>{{ li }}</li>{% endfor %}</ul>
+        {% else %}
+          <p>{{ content }}</p>
+        {% endif %}
+      {% endfor %}
+
+      {% if job.requirements %}
+      <h2>Requirements</h2>
+      <ul class="ticks">
+        {% for r in job.requirements|lines %}<li>{{ r }}</li>{% endfor %}
+      </ul>
+      {% endif %}
+
+      <div class="confirm-box">
+        <strong>Want to confirm this vacancy first?</strong>
+        <p>You can speak to our team directly before you apply.</p>
+        <div class="btn-row">
+          <a class="btn btn-ghost btn-sm" href="tel:{{ site.phone|replace(' ', '') }}">Call {{ site.phone }}</a>
+          {% if wa_number %}<a class="btn btn-ghost btn-sm" target="_blank" rel="noopener"
+             href="https://wa.me/{{ wa_number }}?text=Hello%2C%20I%20want%20to%20confirm%20the%20{{ job.title|urlencode }}%20vacancy%20(Job%20%23{{ job.id }})">WhatsApp us</a>{% endif %}
+        </div>
+      </div>
+
+      {% if not closed %}
+      <div class="apply-box" id="apply">
+        <h2>Apply for this job</h2>
+        <form method="post" action="{{ url_for('apply', job_id=job.id) }}" enctype="multipart/form-data" class="form">
+          <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+          <input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <div class="field-row">
+            <div class="field"><label for="name">Full name <em>*</em></label><input id="name" name="name" required autocomplete="name"></div>
+            <div class="field"><label for="email">Email <em>*</em></label><input id="email" name="email" type="email" required autocomplete="email"></div>
+          </div>
+          <div class="field"><label for="phone">Phone / WhatsApp <em>*</em></label><input id="phone" name="phone" type="tel" required autocomplete="tel" placeholder="+1 ..."></div>
+          <div class="field"><label for="cover_letter">Short note (optional)</label><textarea id="cover_letter" name="cover_letter" rows="4" placeholder="Tell us why you are a good fit"></textarea></div>
+          <div class="field">
+            <label for="cv">Upload your CV <em>*</em></label>
+            <label class="drop" for="cv">
+              <input id="cv" name="cv" type="file" accept=".pdf,.doc,.docx" required>
+              <span class="drop-text"><b>Choose a file</b> or drag it here<small>PDF, DOC or DOCX &middot; max 5 MB</small></span>
+            </label>
+          </div>
+          <button class="btn btn-primary btn-lg" type="submit">Send application</button>
+        </form>
+      </div>
+      {% endif %}
+    </article>
+
+    <aside class="detail-side">
+      <div class="side-card reveal" style="--d:100ms">
+        <h3>Job overview</h3>
+        <dl>
+          <div><dt>Company</dt><dd>{{ job.company }}</dd></div>
+          <div><dt>Location</dt><dd>{{ job.location }}</dd></div>
+          <div><dt>Job type</dt><dd>{{ job.job_type }}</dd></div>
+          <div><dt>Category</dt><dd>{{ job.category }}</dd></div>
+          <div><dt>Salary</dt><dd>{{ job.salary or 'Negotiable' }}</dd></div>
+          <div><dt>Posted</dt><dd>{{ job.created_at|nicedate }}</dd></div>
+          {% if job.deadline %}<div><dt>Deadline</dt><dd>{{ job.deadline|nicedate }}</dd></div>{% endif %}
+        </dl>
+        {% if not closed %}<a href="#apply" class="btn btn-gold btn-block">Apply now</a>{% endif %}
+      </div>
+      <div class="side-card share reveal" style="--d:180ms">
+        <h3>Share this job</h3>
+        <div class="btn-row">
+          <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener"
+             href="https://wa.me/?text={{ (job.title ~ ' at ' ~ job.company ~ ' - ' ~ request.url)|urlencode }}">WhatsApp</a>
+          <button class="btn btn-ghost btn-sm" type="button" data-copy="{{ request.url }}">Copy link</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+{% if similar %}
+<section class="section section-tint">
+  <div class="wrap">
+    <div class="section-head reveal"><p class="kicker">Keep looking</p><h2>Similar jobs</h2></div>
+    <div class="job-grid">{% for j in similar %}{{ job_card(j, loop.index0 * 70) }}{% endfor %}</div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

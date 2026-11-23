@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>{% block title %}Admin{% endblock %} | {{ site.site_name }} Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body>
+  <aside class="side" id="side">
+    <a href="{{ url_for('admin_dashboard') }}" class="side-brand">
+      {% if site.logo %}<img src="{{ url_for('static', filename='uploads/' ~ site.logo) }}" alt="">{% else %}<span class="mark">{{ site.site_name[:1] }}</span>{% endif %}
+      <span>{{ site.site_name }}<small>Admin panel</small></span>
+    </a>
+    <nav>
+      <a href="{{ url_for('admin_dashboard') }}" class="{{ 'on' if request.endpoint == 'admin_dashboard' }}">Dashboard</a>
+      <a href="{{ url_for('admin_jobs') }}" class="{{ 'on' if request.endpoint in ('admin_jobs','admin_job_new','admin_job_edit') }}">Jobs</a>
+      <a href="{{ url_for('admin_applications') }}" class="{{ 'on' if request.endpoint in ('admin_applications','admin_application') }}">Applications</a>
+      <a href="{{ url_for('admin_requests') }}" class="{{ 'on' if request.endpoint == 'admin_requests' }}">Employer requests</a>
+      <a href="{{ url_for('admin_messages') }}" class="{{ 'on' if request.endpoint == 'admin_messages' }}">Messages</a>
+      <a href="{{ url_for('admin_settings') }}" class="{{ 'on' if request.endpoint == 'admin_settings' }}">Settings</a>
+    </nav>
+    <div class="side-foot">
+      <a href="{{ url_for('index') }}" target="_blank" rel="noopener">View website &nearr;</a>
+      <form method="post" action="{{ url_for('admin_logout') }}">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        <button type="submit">Log out ({{ session.admin_name }})</button>
+      </form>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <button class="menu-btn" id="menuBtn" aria-label="Toggle menu">&#9776;</button>
+      <h1>{% block heading %}{% endblock %}</h1>
+      <div class="top-actions">{% block actions %}{% endblock %}</div>
+    </header>
+
+    {% with msgs = get_flashed_messages(with_categories=true) %}
+      {% if msgs %}<div class="flashes">
+        {% for cat, m in msgs %}<div class="flash flash-{{ cat }}">{{ m }}</div>{% endfor %}
+      </div>{% endif %}
+    {% endwith %}
+
+    <div class="content">{% block content %}{% endblock %}</div>
+  </div>
+
+  <script>
+    (function () {
+      var btn = document.getElementById("menuBtn"), side = document.getElementById("side");
+      btn.addEventListener("click", function () { side.classList.toggle("open"); });
+      document.addEventListener("click", function (e) {
+        if (side.classList.contains("open") && !side.contains(e.target) && e.target !== btn) side.classList.remove("open");
+      });
+      document.querySelectorAll("form[data-confirm]").forEach(function (f) {
+        f.addEventListener("submit", function (e) { if (!confirm(f.getAttribute("data-confirm"))) e.preventDefault(); });
+      });
+      document.querySelectorAll(".flash").forEach(function (f) { setTimeout(function () { f.classList.add("gone"); }, 6000); });
+    })();
+  </script>
+</body>
+</html>

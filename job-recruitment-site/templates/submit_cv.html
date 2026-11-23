@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Submit Your CV{% endblock %}
+
+{% block content %}
+<section class="page-head">
+  <div class="wrap">
+    <p class="crumbs"><a href="{{ url_for('index') }}">Home</a> / Submit CV</p>
+    <h1 class="reveal">Submit your CV</h1>
+    <p class="lead reveal" style="--d:80ms">Cannot see the right job yet? Leave your CV with us and we will contact you when a matching vacancy opens.</p>
+  </div>
+</section>
+
+<section class="section tight">
+  <div class="wrap narrow">
+    <div class="form-card reveal" id="form">
+      <form method="post" enctype="multipart/form-data" class="form">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        <input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <div class="field-row">
+          <div class="field"><label for="name">Full name <em>*</em></label><input id="name" name="name" required autocomplete="name"></div>
+          <div class="field"><label for="email">Email <em>*</em></label><input id="email" name="email" type="email" required autocomplete="email"></div>
+        </div>
+        <div class="field"><label for="phone">Phone / WhatsApp <em>*</em></label><input id="phone" name="phone" type="tel" required autocomplete="tel" placeholder="+1 ..."></div>
+        <div class="field"><label for="cover_letter">What kind of job are you looking for?</label><textarea id="cover_letter" name="cover_letter" rows="4" placeholder="Example: Accountant roles in New York, 3 years experience"></textarea></div>
+        <div class="field">
+          <label for="cv">Upload your CV <em>*</em></label>
+          <label class="drop" for="cv">
+            <input id="cv" name="cv" type="file" accept=".pdf,.doc,.docx" required>
+            <span class="drop-text"><b>Choose a file</b> or drag it here<small>PDF, DOC or DOCX &middot; max 5 MB</small></span>
+          </label>
+        </div>
+        <button class="btn btn-primary btn-lg" type="submit">Submit CV</button>
+        <p class="fine">Your CV is private. Only our recruitment team can see it.</p>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}
